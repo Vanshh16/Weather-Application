@@ -1,0 +1,195 @@
+<%- include("header") -%>
+ <body>
+
+<!-- Calculations -->
+<% let dt = new Date(weatherData.dt * 1000).toLocaleString();%>
+<% let sunrise = new Date(weatherData.sys.sunrise * 1000);%>
+<% sunrise = sunrise.getHours() +":"+ sunrise.getMinutes(); %>
+<% let sunset = new Date(weatherData.sys.sunset * 1000);%>
+<% sunset = sunset.getHours() +":"+ sunset.getMinutes(); %>
+<% let windSp = ((weatherData.wind.speed) * 18/5).toFixed(2); %>
+
+<!-- Degree to direction -->
+<% const directions = ['↑ N', '↗ NE', '→ E', '↘ SE', '↓ S', '↙ SW', '← W', '↖ NW']; %>
+<% let windDir = directions[Math.round(weatherData.wind.deg / 45) % 8]; %>
+
+<!-- Rain Calculations -->
+<% let rain="NA"; %>
+<% if(weatherData.hasOwnProperty('rain')){%>
+<% rain=weatherData.rain["1h"];}%>
+
+<!-- Aqi Calculations -->
+
+<%let color = "blue";%>
+<% let aqi = aqiData.list[0].main.aqi; %>
+<% switch (aqi) {
+  case 1: %>
+<%aqi = "Good";%>
+<%color = "#1A5D1A";%>
+<% break;
+  case 2: %>
+  <% aqi = "Fair";%>
+  <% color = "#A2FF86";%>
+<% break;
+  case 3: %>
+<%aqi = "Moderate";%>
+<% color = "#FFE15D";%>
+<% break;
+  case 4: %>
+<% aqi = "Poor";%>
+<% color = "#FE6244";%>
+<% break;
+  case 5: %>
+<% aqi = "Very Poor";%>
+<% color = "#ED2B2A";%>
+<% break;
+  default:%>
+<% aqi = "Okay";
+  break; } %>
+
+
+
+  <!-- Navbar -->
+  <!-- style="background-image: linear-gradient(to top, #fff1eb 0%, #ace0f9 100%);" -->
+  <nav class="navbar navbar-expand-lg py-3" id="nav-text-color" style="background-color:#2C3333;">
+  <div class="container-fluid">
+    <a class="navbar-brand h1 mb-0" id="nav-text-color" href="#">Weather</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0" >
+        <li class="nav-item">
+          <a class="nav-link active" id="nav-text-color" aria-current="page" href="/">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="nav-text-color" href="#">Forecast</a>
+        </li>
+      </ul>
+      <form action="/" method="post" class="d-flex" role="search">
+        <input class="form-control me-2 inputt" type="search" placeholder="Search your city" aria-label="Search" name="cityName" required>
+        <button class="btn btn-outline-success" type="submit" id="nav-text-color">Search</button>
+      </form>
+    </div>
+  </div>
+</nav>
+
+<!-- Main Body -->
+
+<div class="container my-5">
+<div class="row top p-5 text-center rounded-3">
+  <div class="col">
+    <h1 class="text-body-emphasis" ><strong style="font-size:70px"><%=weatherData.main.temp%> &deg; C</strong></h1>
+    <h3 style="font-weight:bold;"><%= weatherData.weather[0].description%></h3>
+    <h5 class="mt-3" style="font-weight:bold;">Feels like <%= weatherData.main.feels_like%> &deg;</h5>
+  </div>
+<div class="col">
+  <img src="<%=imageURL%>" alt="Clouds" style="width:180px;">
+</div>
+<h2><%=weatherData.name%> , <%=weatherData.sys.country%> </h2>
+</div>
+ <div class="row p-5 text-center rounded-3">
+  <div class="col mx-1">
+    <img src="/images/sun.png" alt="sun" style="width:100px;margin-right: 105px;">
+    <h4 class="my-2 py-2" style="margin-right: 105px;">Sunrise: <%= sunrise%></h4>
+    <h4 class="my-2 py-2" style="margin-right: 110px;">Sunset: <%= sunset%></h4>
+  </div>
+  <div class="col mx-1">
+    <img class="rotate" src="/images/temp.png" alt="sun" style="width:70px;margin-right: 100px;">
+    <h4 class="my-2 py-2" style="margin-right: 100px;">Max. temperature: <%= weatherData.main.temp_max%>&deg; C</h4>
+    <h4 class="my-2 py-2" style="margin-right: 100px;">Min. temperature: <%= weatherData.main.temp_min%>&deg; C</h4>
+  </div>
+</div>
+  <div class="row p-5 text-center rounded-3">
+    <div class="col mx-1">
+      <h3 class="text-body-emphasis" style="margin-right: 140px;">Wind</h3>
+      <img class="my-2" src="/images/wind.png" alt="sun" style="width:80px;margin-right: 140px; ">
+      <h4 class="my-2 py-1" style="margin-right: 140px;">Speed: <%= windSp%> km/h</h4>
+      <h4 class="my-2 py-1" style="margin-right: 130px;">Direction: <%= windDir %></h4>
+    </div>
+    <div class="col mx-1">
+      <h3 style="">Rain</h3>
+      <img class="my-2 py-1" src="/images/rain.png" alt="sun" style="width:100px;">
+      <h4 class="my-2 py-1" style=""><%=rain%> mm</h4>
+    </div>
+  </div>
+</div>
+
+
+  <div class="row p-3 margin-x text-center rounded-3">
+    <div class="col mx-1 secondary-box">
+      <h3 class="text-body-emphasis mt-4" >Pressure</h3>
+      <h4 ><%= weatherData.main.pressure%>hPa </h4>
+    </div>
+    <div class="col mx-1 secondary-box">
+      <h3 class="text-body-emphasis mt-4" >Humidity</h3>
+      <h4 ><%= weatherData.main.humidity%>% </h4>
+    </div>
+    <div class="col mx-1 secondary-box">
+      <h3 class="text-body-emphasis mt-4" >Visibilty</h3>
+      <h4 ><%= weatherData.visibility%> metres</h4>
+    </div>
+    <div class="col mx-1 secondary-box">
+      <h3 class="text-body-emphasis mt-4" >Clouds</h3>
+      <h4 ><%= weatherData.clouds.all%> %</h4>
+    </div>
+  </div>
+
+  <!-- AQI -->
+
+
+  <div class="container my-3">
+    <img class="aqi-img" src="images/aqi.png" alt="">
+    <div class="aqi bottom">
+    <h1>AQI</h1>
+    <h3 style="background-color: <%=color%>;"><%= aqi %></h3>
+    </div>
+    <div class="row p-3 text-center rounded-3">
+      <div class="col mx-1 aqi-box">
+        <h3 class="text-body-emphasis mt-4" >CO</h3>
+        <h4 ><%= aqiData.list[0].components.co %></h4>
+      </div>
+      <div class="col mx-1 aqi-box">
+        <h3 class="text-body-emphasis mt-4" >NO</h3>
+        <h4 ><%= aqiData.list[0].components.no %></h4>
+      </div>
+      <div class="col mx-1 aqi-box">
+        <h3 class="text-body-emphasis mt-4" >NO2</h3>
+        <h4 ><%= aqiData.list[0].components.no2 %></h4>
+      </div>
+      <div class="col mx-1 aqi-box">
+        <h3 class="text-body-emphasis mt-4" >O3</h3>
+        <h4><%= aqiData.list[0].components.o3 %></h4>
+      </div>
+    </div>
+    <div class="row p-3 text-center rounded-3">
+      <div class="col mx-1 aqi-box">
+        <h3 class="text-body-emphasis mt-4">SO2</h3>
+        <h4 ><%= aqiData.list[0].components.so2 %></h4>
+      </div>
+      <div class="col mx-1 aqi-box">
+        <h3 class="text-body-emphasis mt-4" >PM 2.5</h3>
+        <h4 ><%= aqiData.list[0].components.pm2_5 %></h4>
+      </div>
+      <div class="col mx-1 aqi-box">
+        <h3 class="text-body-emphasis mt-4" >PM 10</h3>
+        <h4 ><%= aqiData.list[0].components.pm10 %></h4>
+      </div>
+      <div class="col aqi-box mx-1">
+        <h3 class="text-body-emphasis mt-4" >NH3</h3>
+        <h4 ><%= aqiData.list[0].components.nh3 %>%</h4>
+      </div>
+    </div>
+  </div>
+
+  <div class="pt-5">
+    <h6 style="margin-left: 25px;">
+    <span style="color:#CBE4DE;">Latitude:<%= weatherData.coord.lat%></span>
+    <span style="color:#CBE4DE;">Longitude:<%= weatherData.coord.lon%></span></h6>
+  </div>
+  <div class="">
+    <h6 style="margin-left: 25px; color:#CBE4DE;">As recorded at <%= dt%></h6>
+  </div>
+
+
+  <%- include("footer") %>
